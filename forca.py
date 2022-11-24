@@ -2,14 +2,24 @@ import random
 import os
 from rich import print
 from rich.panel import Panel
-
+import PySimpleGUI as sg
 import adivianhacao
 
 
 def mensagem_abertura():
+    layout2 = [[sg.Text('Bem vindo ao jogo de Forca')],
+                 [sg.Text('advinhação')],
+               [sg.Button('OK'), sg.Button('Cancelar')]]
 
-    print(Panel.fit("************************\n Bem vindo ao jogo de Forca \n *******************************"))
-    os.system("cls")
+    windows = sg.Window('Window Title', layout2)
+
+    while True:
+        envent, values = windows.read()
+        if envent == sg.WINDOW_CLOSED or envent == 'Cancelar':
+            quit()
+        elif envent == 'OK':
+            break
+
 def carregar_palavra_secreta():
     arquivo = open("Lista-de-Palavras.txt", "r")
     palavra = []
@@ -26,11 +36,18 @@ def inicializa_letra_acertada(palavra):
     return ["_" for letra in palavra]
 
 def pede_chute():
-    chute = input("Qual letra?").strip().upper()
-    os.system("cls")
+    layout3 = [[sg.Input()],
+               [sg.Text('advinhação')],
+               [sg.Button('OK')]]
+
+    window = sg.Window('Window Title', layout3)
+    event, values = window.read()
+
+
+    chute = values[0].strip().upper()
     return chute
 
-
+    window.close()
 def marca_chute_correto(chute, letras_acertasa, palavra_secreta):
 
     posicao = 0
@@ -76,19 +93,20 @@ def imprime_mensagem_vencedor(palavra_secreta):
 
 
 def jogar_forca():
+
     mensagem_abertura()
 
     palavra_secreta = carregar_palavra_secreta()
 
     letras_acertasa = inicializa_letra_acertada(palavra_secreta)
-    tentativas = adivianhacao.total_de_tentativas()
-    print(tentativas)
+    #tentativas = adivianhacao.total_de_tentativas()
+    #print(tentativas)
     print(letras_acertasa)
     #print(Panel.fit(palavra_secreta))
     enforcou = False
     acertou = False
     erros = 0
-    falta = len(palavra_secreta) + tentativas
+    falta = len(palavra_secreta) #+ tentativas
 
     while (not enforcou and not acertou):
         chute = pede_chute()
@@ -100,7 +118,7 @@ def jogar_forca():
             falta -= 1
             print(Panel.fit("Ops, você errou! \n Faltam {} tentativas.".format(falta)))
 
-        enforcou = erros == len(palavra_secreta) + tentativas
+        enforcou = erros == len(palavra_secreta) #+ tentativas
         acertou = "_" not in letras_acertasa
         print(letras_acertasa)
     if(acertou):
